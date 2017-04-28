@@ -38,6 +38,16 @@ body.landing{
   position: relative;
   padding: 2rem;
   text-align:center;
+  opacity: 0;
+  -moz-transform: scaleX(0.4), translateY(3rem) rotate(180deg);
+  -webkit-transform: scaleX(0.4), translateY(3rem) rotate(180deg);
+  transform: scaleX(0.4), translateY(3rem) rotate(180deg);
+  -moz-transition: all 1s ease-in-out;
+  -webkit-transition: all 1s ease-in-out;
+  transition: all 0.1s ease-in-out;
+  -moz-transition-delay: 0.2s;
+  -webkit-transition-delay: 0.2s;
+  transition-delay: 0.2s;
 }
 
 .point .point-title{
