@@ -28,6 +28,21 @@ var albumMacroni = {
   ]
 };
 
+var albumGaga = {
+  title: 'Fame Monster',
+  artist: 'Lady Gaga',
+  label: "Haus of Gaga",
+  year: '2010',
+  albumArtUrl: 'assets/images/album_covers/21.png',
+  songs: [
+  {title: 'Bad Romance', duration: '1:01'},
+  {title: 'Telephone', duration: '5:01'},
+  {title: 'Pokerface', duration: '3:21'},
+  {title: 'Judas', duration: '3:14'},
+  {title: 'Born This Way', duration: '2:15'}
+  ]
+};
+
 function createSongRow(songNumber, songName, songLength){
  var template = '<tr class="album-view-song-item">' +
  '<td class="song-item-number">' + songNumber + '</td>'
@@ -58,4 +73,16 @@ function setCurrentAlbum(album){
 
 window.onload = function(){
   setCurrentAlbum(albumPicasso);
+  var totalAlbums = [albumPicasso, albumMacroni, albumGaga];
+  var i = 0;
+  var albumImage= document.getElementsByClassName('album-cover-art')[0];
+  albumImage.addEventListener("click", function(event){
+    if(i == totalAlbums.length - 1){
+      i = 0;
+    } else {
+    i++;
+  }
+
+    setCurrentAlbum(totalAlbums[i]);
+  });
 };
