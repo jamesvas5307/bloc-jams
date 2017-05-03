@@ -53,6 +53,7 @@ function createSongRow(songNumber, songName, songLength){
 }
 
 function setCurrentAlbum(album){
+
   var albumTitle = document.getElementsByClassName('album-view-title')[0];
   var albumArtist = document.getElementsByClassName('album-view-artist')[0];
   var albumReleaseInfo = document.getElementsByClassName('album-view-release-info')[0];
@@ -74,10 +75,17 @@ function setCurrentAlbum(album){
 function findParentByClassName(element, targetClass){
   if(element){
     var currentParent = element.parentElement;
+    console.log(currentParent);
     while(currentParent.className !== targetClass && currentParent.className !== null){
       currentParent = currentParent.parentElement;
     }
+    if(currentParent === undefined){
+      console.log("No parent found");
+    } else if(currentParrent.className !== targetClass){
+      console.log("No parent found with that class name");
+    } else {
     return currentParent;
+  }
   }
 }
 
@@ -124,16 +132,16 @@ var currentlyPlayingSong = null;
 window.onload = function(){
   setCurrentAlbum(albumPicasso);
   var totalAlbums = [albumPicasso, albumMacroni, albumGaga];
-  var i = 0;
+  var b = 0;
   var albumImage= document.getElementsByClassName('album-cover-art')[0];
   albumImage.addEventListener("click", function(event){
-    if(i == totalAlbums.length - 1){
-      i = 0;
+    if(b == totalAlbums.length - 1){
+      b = 0;
     } else {
-    i++;
+    b++;
   }
-
-    setCurrentAlbum(totalAlbums[i]);
+    console.log(totalAlbums[b], b);
+    setCurrentAlbum(totalAlbums[b]);
   });
 
   songListContainer.addEventListener("mouseover", function(event){
