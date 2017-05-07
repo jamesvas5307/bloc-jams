@@ -8,10 +8,7 @@ function createSongRow(songNumber, songName, songLength){
 
  var $row = $(template);
 
-function setSong(songNumber){
-  currentlyPlayingSongNumber = parseInt(songNumber);
-  currentSongFromAlbum = currentAlbum.songs[songNumber - 1];
-}
+
 
 
 
@@ -24,12 +21,20 @@ function setSong(songNumber){
    if(currentlyPlayingSongNumber !== songNumber) {
      $(this).html(pauseButtonTemplate);
      setSong(songNumber);
+     currentSongFile.play();
      updatePlayerBarSong();
    } else if(currentlyPlayingSongNumber == songNumber){
-     $(this).html(playButtonTemplate);
      $('.main-controls .play-pause').html(playerBarPlayButton);
-     currentlyPlayingSongNumber = null;
-     currentSongFromAlbum = null;
+     if(currentSongFile.isPaused()) {
+       $(this).html(pauseButtonTemplate);
+       $('.main-controls .play-pause').html(playerBarPauseButton);
+       currentSongFile.play();
+     } else{
+       $(this).html(playButtonTemplate);
+       $('.main-controls .play-pause').html(playerBarPauseButton);
+       currentSongFile.pause();
+
+     }
    }
  };
 
@@ -95,9 +100,10 @@ function playerClickHandler(){
 
   var lastSongNumber = currentlyPlayingSongNumber;
   currentlyPlayingSongNumber = currentSongIndex + 1;
-  currentSongFromAlbum = currentAlbum.songs[currentSongIndex];
+  setSong(currentlyPlayingSongNumber);
 
   updatePlayerBarSong();
+  currentSongFile.play();
   var $nextSongNumberCell = getSongNumberCell(currentlyPlayingSongNumber);
   var $lastSongNumberCell = getSongNumberCell(lastSongNumber);
 
@@ -117,6 +123,26 @@ function getSongNumberCell(number){
   return $('.song-item-number[data-song-number="' + number + '"');
 }
 
+function setSong(songNumber){
+  if(currentSongFile){
+    if(currentSongFile){
+      currentSongFile.stop();
+    }
+  }
+  currentlyPlayingSongNumber = parseInt(songNumber);
+  currentSongFromAlbum = currentAlbum.songs[songNumber - 1];
+  currentSongFile = new buzz.sound(currentSongFromAlbum.audioUrl,{
+    formats: ['mp3'],
+    preload: true
+  });
+  setVolume(currentVolume);
+}
+
+function setVolume(volume){
+  if(currentSongFile){
+    currentSongFile.setVolume(volume);
+  }
+}
 
 var playButtonTemplate= "<a class='album-song-button'><span class='ion-play'></span></a>";
 var pauseButtonTemplate= "<a class='album-song-button'><span class='ion-pause'></span></a>";
@@ -128,6 +154,8 @@ var $nextButton = $('.main-controls .next');
 var currentlyPlayingSongNumber = null;
 var currentSongFromAlbum = null;
 var currentAlbum = null;
+var currentSongFile = null;
+var currentVolume = 80;
 
 $(document).ready(function(){
   setCurrentAlbum(albumPicasso);
