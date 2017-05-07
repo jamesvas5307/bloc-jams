@@ -49,7 +49,46 @@ function createSongRow(songNumber, songName, songLength){
  + '<td class="song-item-title">' + songName + '</td>'
  + '<td class="song-item-duration">' + songLength + '</td></tr>';
 
- return $(template);
+ var $row = $(template);
+
+ function clickHandler() {
+   var songItem = $(this).attr('data-song-number');
+   if(currentlyPlayingSong !== null){
+     var currentPlayingCell = $('.song-item-number[data-song-number="' + currentlyPlayingSong + '"]');
+     currentPlayingCell.html(currentlyPlayingSong);
+   }
+   if(currentlyPlayingSong !== songNumber) {
+     $(this).html(pauseButtonTemplate);
+     currentlyPlayingSong = songNumber;
+   } else if(currentlyPlayingSong == songNumber){
+     $(this).html(playButtonTemplate);
+     currentPlayingSong = null;
+   }
+ };
+
+ function onHover(event){
+   var songItem = $(this).find('.song-item-number');
+   var songNumber = songItem.attr('data-song-number');
+   if(songNumber !== songItem){
+     songItem.html(playButtonTemplate);
+   };
+ }
+
+ function offHover(event){
+   var songItem = $(this).find('.song-item-number');
+   var songNumber = songItem.attr('data-song-number');
+   if(songNumber == currentlyPlayingSong){
+     songItem.html(pauseButtonTemplate);
+   } else{
+     songItem.html(songNumber);
+   }
+ }
+
+ $row.find('.song-item-number').click(clickHandler);
+ $row.hover(onHover, offHover);
+ return $row;
+
+
 }
 
 function setCurrentAlbum(album){
@@ -73,64 +112,13 @@ function setCurrentAlbum(album){
   }
 }
 
-function findParentByClassName(element, targetClass){
-  if(element){
-    var currentParent = element.parentElement;
-    console.log(currentParent);
-    while(currentParent.className !== targetClass && currentParent.className !== null){
-      currentParent = currentParent.parentElement;
-    }
-    if(currentParent === undefined){
-      console.log("No parent found");
-    } else if(currentParrent.className !== targetClass){
-      console.log("No parent found with that class name");
-    } else {
-    return currentParent;
-  }
-  }
-}
 
-function getSongItem(element){
-  switch(element.className){
-    case 'album-song-button' :
-    case 'ion-play' :
-    case 'ion-pause' :
-      return findParentByClassName(element, 'song-item-number');
-    case 'album-view-song-item':
-      return element.querySelector('.song-item-number');
-    case 'song-item-title':
-    case 'song-item-duration' :
-    return findParentByClassName(element, 'album-view-song-item').querySelector('.song-item-number');
-    case 'song-item-number':
-      return element;
-    default:
-      return;
-  }
-};
-
-function clickHandler(targetElement){
-  var songItem = getSongItem(targetElement);
-  if(currentlyPlayingSong === null){
-    songItem.innerHTML = pauseButtonTemplate;
-    currentlyPlayingSong = songItem.getAttribute('data-song-number');
-  } else if(currentlyPlayingSong === songItem.getAttribute('data-song-number')){
-    songItem.innerHTML = playButtonTemplate;
-    currentlyPlayingSong = null;
-  } else if(currentlyPlayingSong !== songItem.getAttribute('data-song-number')){
-    var currentlyPlayingSongElement = document.querySelector('[data-song-number="' + currentlyPlayingSong + '" ]');
-    currentlyPlayingSongElement.innerHTML = currentlyPlayingSongElement.getAttribute('data-song-number');
-    songItem.innerHTML = pauseButtonTemplate;
-    currentlyPlayingSong = songItem.getAttribute('data-song-number');
-  }
-}
-
-var songListContainer = document.getElementsByClassName("album-view-song-list")[0];
 var playButtonTemplate= "<a class='album-song-button'><span class='ion-play'></span></a>";
 var pauseButtonTemplate= "<a class='album-song-button'><span class='ion-pause'></span></a>";
-var songRows = document.getElementsByClassName("album-view-song-item");
+
 var currentlyPlayingSong = null;
 
-window.onload = function(){
+$(document).ready(function(){
   setCurrentAlbum(albumPicasso);
   var totalAlbums = [albumPicasso, albumMacroni, albumGaga];
   var b = 0;
@@ -144,23 +132,5 @@ window.onload = function(){
     setCurrentAlbum(totalAlbums[b]);
   });
 
-  songListContainer.addEventListener("mouseover", function(event){
 
-    var songItem = getSongItem(event.target);
-    if(songItem.getAttribute('data-song-number') !== currentlyPlayingSong){
-      songItem.innerHTML = playButtonTemplate;
-    };
-  });
-  for ( var i = 0; i < songRows.length; i++){
-    songRows[i].addEventListener("mouseleave", function(event){
-      var songItem = getSongItem(event.target);
-      var songItemNumber = songItem.getAttribute('data-song-number');
-      if(songItemNumber !== currentlyPlayingSong){
-        songItem.innerHTML = songItemNumber;
-      }
-    });
-    songRows[i].addEventListener("click", function(event){
-      clickHandler(event.target);
-    });
-  }
-};
+});
