@@ -85,7 +85,7 @@ function setCurrentAlbum(album){
   $albumSongList.empty();
 
   for (var i=0; i < album.songs.length; i++){
-    var $newRow = createSongRow(i+1, album.songs[i].title, album.songs[i].duration);
+    var $newRow = createSongRow(i+1, album.songs[i].title, filterTimeCode(album.songs[i].duration));
     $albumSongList.append($newRow);
   }
 }
@@ -211,8 +211,12 @@ function setupSeekBars(){
 function updateSeekBarWhileSongPlays(){
   if (currentSongFile){
     currentSongFile.bind('timeupdate',function(event){
-      var seekBarFillRatio = this.getTime()/this.getDuration();
+      var currentTime = this.getTime();
+      var currentSongDuration = this.getDuration();
+      var seekBarFillRatio = currentTime/currentSongDuration;
       var $seekBar = $('.seek-control .seek-bar');
+      setCurrentTimeInPlayerBar(filterTimeCode(currentTime));
+      setTotalTimeInPlayerBar(filterTimeCode(currentSongDuration));
       updateSeekPercentage($seekBar,seekBarFillRatio);
     });
   }
@@ -222,6 +226,21 @@ function seek(time){
   if(currentSongFile){
     currentSongFile.setTime(time);
   }
+}
+
+function setCurrentTimeInPlayerBar(currentTime){
+  $('.current-time').text(currentTime);
+}
+
+function setTotalTimeInPlayerBar(totalTime){
+  $('.total-time').text(totalTime);
+}
+
+function filterTimeCode(number){
+  number = parseFloat(number);
+  var minutes = Math.floor(number/60,2);
+  var seconds = Math.floor(number % 60);
+  return minutes +':'+ seconds;
 }
 
 var playButtonTemplate= "<a class='album-song-button'><span class='ion-play'></span></a>";
